@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 
 defined("XYO_WEB") or die("Forbidden");
-require_once ("./site/web.php");
+require_once ("./_site/web.php");
 
 class TableCounter extends \XYO\Web\DataSource\Table
 {

@@ -7,10 +7,10 @@
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once ("./site/web.php");
-require_once ("./site/library/lucide-icons.php");
-require_once ("./site/library/xyo-web-logo.php");
-require_once ("./site/library/overlayscrollbars.php");
+require_once ("./_site/web.php");
+require_once ("./_site/library/lucide-icons.php");
+require_once ("./_site/library/xyo-web-logo.php");
+require_once ("./_site/library/overlayscrollbars.php");
 require_once ("./example/component-server.php");
 require_once ("./example/component-ajax.php");
 require_once ("./example/component-ajax-db.php");
@@ -63,11 +63,11 @@ class Test extends \XYO\Web\Page
 
     public function render(&$options = null)
     { ?>
-        <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-stone-300 py-6 sm:py-12">
+        <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-slate-300 py-6 sm:py-12">
             <div class="relative y-900/5 sm:mx-auto sm:max-w-lg sm:px-10">
 
-                <div class="min-w-[480px] p-6 bg-white rounded-xl border bg-card text-card-foreground shadow mb-3">
-                    <div class="flex flex-row items-center justify-center pb-2">
+                <div class="min-w-[480px] bg-white mb-3 p-3 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
+                    <div class="flex flex-row items-center justify-center">
                         <?php $this->renderComponent("logo"); ?>
                     </div>
                 </div>

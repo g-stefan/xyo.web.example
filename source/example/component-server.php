@@ -7,8 +7,8 @@
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once ("./site/web.php");
-require_once ("./site/library/lucide-icons.php");
+require_once ("./_site/web.php");
+require_once ("./_site/library/lucide-icons.php");
 use \XYO\Library\LucideIcons;
 
 class ComponentServer extends \XYO\Web\Component
@@ -27,7 +27,7 @@ class ComponentServer extends \XYO\Web\Component
     public function render(&$options = null)
     { ?>
 
-        <div class="min-w-[480px] bg-white rounded-xl border bg-card text-card-foreground shadow mb-3">
+        <div class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
             <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 class="tracking-tight text-sm font-medium">Server component</h3>
                 <?php $this->renderComponent("icons", "server"); ?>

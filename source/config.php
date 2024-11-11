@@ -25,7 +25,7 @@ $config->dataSource = new \stdClass();
 $config->dataSource->connections = array(
 	"db" => array(
 		"type" => "sqlite",		
-		"database" => "./site/repository/example.sqlite",
+		"database" => "./_site/repository/example.sqlite",
 		"prefix" => ""
 	)
 );
