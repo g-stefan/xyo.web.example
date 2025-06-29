@@ -8,6 +8,7 @@
 defined("XYO_WEB") or die("Forbidden");
 
 require_once ("./_site/web.php");
+require_once ("./_site/library/xyo-web-example-css.php");
 require_once ("./_site/library/lucide-icons.php");
 require_once ("./_site/library/xyo-web-logo.php");
 require_once ("./_site/library/overlayscrollbars.php");
@@ -18,6 +19,7 @@ require_once ("./example/query-user.php");
 use \XYO\Library\LucideIcons;
 use \XYO\Library\XYOWebLogo;
 use \XYO\Library\OverlayScrollbars;
+use \XYO\Library\XYOWebExampleCSS;
 
 class Test extends \XYO\Web\Page
 {
@@ -26,6 +28,7 @@ class Test extends \XYO\Web\Page
     {
         $this->setTitle("Web");
 
+        XYOWebExampleCSS::register($this);
         LucideIcons::register($this, "icons");
         XYOWebLogo::register($this, "logo");
         OverlayScrollbars::register($this, "overlayscrollbars");

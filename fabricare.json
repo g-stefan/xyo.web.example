@@ -10,7 +10,7 @@
 		],
 		"releaseOutput" : true,
 		"vendor" : {
-			"xyo.web" : "0.23.0"
+			"xyo.web" : "0.24.0"
 		}
 	}
 }
