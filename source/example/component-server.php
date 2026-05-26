@@ -1,39 +1,40 @@
 <?php
-// XYO.Web
-// Copyright (c) 2024 Grigore Stefan <g_stefan@yahoo.com>
-// MIT License (MIT) <http://opensource.org/licenses/MIT>
-// SPDX-FileCopyrightText: 2024 Grigore Stefan <g_stefan@yahoo.com>
-// SPDX-License-Identifier: MIT
+
+// XYO.Web Example
+// SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: Apache-2.0
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once ("./_site/web.php");
-require_once ("./_site/library/lucide-icons.php");
-use \XYO\Library\LucideIcons;
+require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
+use \XYO\LucideIcons\LucideIcons;
 
 class ComponentServer extends \XYO\Web\Component
 {
+    protected $count;
 
-    public function init()
+    public function init($options = null)
     {
 
         if ($this->isPost()) {
-            $this->sessionSet("count", $this->sessionGet("count", 0) + 1);
+            $this->session->set("server-count", $this->session->get("server-count", 0) + 1);
         }
+        $this->count = $this->session->get("server-count", 0);
 
         LucideIcons::register($this, "icons");
     }
 
-    public function render(&$options = null)
+    public function render($options = null)
     { ?>
 
-        <div class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
+        <div
+            class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
             <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 class="tracking-tight text-sm font-medium">Server component</h3>
                 <?php $this->renderComponent("icons", "server"); ?>
             </div>
             <div class="p-6 pt-0">
-                <div class="text-2xl font-bold">Counter: <?php echo $this->sessionGet("count", 0); ?></div>
+                <div class="text-2xl font-bold">Counter: <?php echo $this->count; ?></div>
                 <p class="text-xs text-muted-foreground">This component is rendered on page every time.</p>
             </div>
             <div class="flex justify-center items-center p-4">

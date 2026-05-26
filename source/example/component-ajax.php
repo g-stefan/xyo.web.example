@@ -1,40 +1,42 @@
 <?php
-// XYO.Web
-// Copyright (c) 2024 Grigore Stefan <g_stefan@yahoo.com>
-// MIT License (MIT) <http://opensource.org/licenses/MIT>
-// SPDX-FileCopyrightText: 2024 Grigore Stefan <g_stefan@yahoo.com>
-// SPDX-License-Identifier: MIT
+
+// XYO.Web Example
+// SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: Apache-2.0
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once ("./_site/web.php");
-require_once ("./example/component-ajax-nested.php");
-require_once ("./_site/library/lucide-icons.php");
-use \XYO\Library\LucideIcons;
+require_once(XYO_WEB_PATH . "example/component-ajax-nested.php");
+require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
+use \XYO\LucideIcons\LucideIcons;
 
-class ComponentAjax extends \XYO\Web\ComponentAJAX
+class ComponentAjax extends \XYO\Web\Component
 {
 
-    public function init()
+    protected $count;
+
+    public function init($options = null)
     {
         if ($this->isAJAX() && $this->isPost()) {
-            $this->sessionSet("count", $this->sessionGet("count", 0) + 1);
+            $this->session->set("ajax-count", $this->session->get("ajax-count", 0) + 1);
         }
+        $this->count = $this->session->get("ajax-count", 0);
 
         LucideIcons::register($this, "icons");
         ComponentAjaxNested::register($this, "ajax-nested");
     }
 
-    protected function renderAJAX()
+    public function renderAJAX($options = null)
     { ?>
 
-        <div class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
+        <div
+            class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
             <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
                 <h3 class="tracking-tight text-sm font-medium">AJAX component</h3>
                 <?php $this->renderComponent("icons", "component"); ?>
             </div>
             <div class="p-6 pt-0">
-                <div class="text-2xl font-bold">Counter: <?php echo $this->sessionGet("count", 0); ?></div>
+                <div class="text-2xl font-bold">Counter: <?php echo $this->count; ?></div>
                 <p class="text-xs text-muted-foreground">This component is using ajax.</p>
             </div>
         </div>
@@ -42,7 +44,7 @@ class ComponentAjax extends \XYO\Web\ComponentAJAX
 
     <?php }
 
-    protected function renderContainer(&$options = null)
+    public function renderContainer($options = null)
     {
         echo "<div id=\"" . $this->id . "\">";
         $this->renderAJAX();
@@ -52,7 +54,7 @@ class ComponentAjax extends \XYO\Web\ComponentAJAX
             <script>
 
                 setInterval(function () {
-                    <?php $this->renderAJAXRequestPost(); ?>
+                    <?php $this->renderJSRequestPost(); ?>
                 }, 10000);
 
             </script>

@@ -1,7 +1,7 @@
-// XYO.Web
-// Copyright (c) 2024 Grigore Stefan <g_stefan@yahoo.com>
+// XYO.Web Overlay-Scrollbars
+// Copyright (c) 2024-2025 Grigore Stefan <g_stefan@yahoo.com>
 // MIT License (MIT) <http://opensource.org/licenses/MIT>
-// SPDX-FileCopyrightText: 2024 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-FileCopyrightText: 2024-2025 Grigore Stefan <g_stefan@yahoo.com>
 // SPDX-License-Identifier: MIT
 
 if (typeof XYO === "undefined") {
@@ -23,7 +23,7 @@ XYO.Web.OverlayScrollbars.instance = null;
 XYO.Web.OverlayScrollbars.create = function(elements, options) {
 	retV = [];
 	if (!options) {
-		options = {scrollbars : {clickScrolling : true}};
+		options = {scrollbars : {clickScroll : true}};
 	};
 	Array.from(elements).forEach(function(item) {
 		retV.push(this.instance(item, options));

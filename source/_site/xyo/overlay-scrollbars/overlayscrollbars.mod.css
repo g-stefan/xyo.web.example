@@ -1,0 +1,28 @@
+/*
+// XYO.Web Overlay-Scrollbars
+// Copyright (c) 2024-2025 Grigore Stefan <g_stefan@yahoo.com>
+// MIT License (MIT) <http://opensource.org/licenses/MIT>
+// SPDX-FileCopyrightText: 2024-2025 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: MIT
+*/
+
+.os-theme-dark,
+.os-theme-light {
+	--os-size-on-hover: 12px;
+}
+
+.os-scrollbar-vertical {
+	transition: width 0.25s ease;
+}
+
+.os-scrollbar-vertical:hover {
+	width: var(--os-size-on-hover);
+}
+
+.os-scrollbar-horizontal {
+	transition: height 0.25s ease;
+}
+
+.os-scrollbar-horizontal:hover {
+	height: var(--os-size-on-hover);
+}

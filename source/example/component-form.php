@@ -1,0 +1,111 @@
+<?php
+
+// XYO.Web Example
+// SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: Apache-2.0
+
+defined("XYO_WEB") or die("Forbidden");
+
+require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
+use \XYO\LucideIcons\LucideIcons;
+
+class ComponentForm extends \XYO\Web\ComponentForm
+{
+
+    public function init($options = null)
+    {
+        LucideIcons::register($this, "icons");
+    }
+
+    public function renderAJAX($options = null)
+    {
+        $this->renderFormAJAX(function () {
+            ?>
+
+            <div
+                class="min-w-[480px] bg-white mb-3 p-0 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">
+                <div class="p-6 flex flex-row items-center justify-between space-y-0 pb-2">
+                    <h3 class="tracking-tight text-sm font-medium">Component Form AJAX</h3>
+                    <?php $this->renderComponent("icons", "component"); ?>
+                </div>
+                <div class="space-y-12 p-6 pt-0">
+
+                    <div class="border-b border-gray-900/10 pb-12">
+
+                        <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                            <div class="sm:col-span-3">
+                                <label for="first-name" class="block text-sm/6 font-medium text-gray-900">First name</label>
+                                <div class="mt-2">
+                                    <input id="first-name" type="text" name="first-name" autocomplete="given-name"
+                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-3">
+                                <label for="last-name" class="block text-sm/6 font-medium text-gray-900">Last name</label>
+                                <div class="mt-2">
+                                    <input id="last-name" type="text" name="last-name" autocomplete="family-name"
+                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-4">
+                                <label for="email" class="block text-sm/6 font-medium text-gray-900">Email address</label>
+                                <div class="mt-2">
+                                    <input id="email" type="email" name="email" autocomplete="email"
+                                        class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6" />
+                                </div>
+                            </div>
+
+                            <div class="sm:col-span-3">
+                                <label for="country" class="block text-sm/6 font-medium text-gray-900">Country</label>
+                                <div class="mt-2 grid grid-cols-1">
+                                    <select id="country" name="country" autocomplete="country-name"
+                                        class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                        <option>United States</option>
+                                        <option>Canada</option>
+                                        <option>Mexico</option>
+                                    </select>
+                                    <svg viewBox="0 0 16 16" fill="currentColor" data-slot="icon" aria-hidden="true"
+                                        class="pointer-events-none col-start-1 row-start-1 mr-2 size-5 self-center justify-self-end text-gray-500 sm:size-4">
+                                        <path
+                                            d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z"
+                                            clip-rule="evenodd" fill-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <button type="button" class="text-sm/6 font-semibold text-gray-900">Cancel</button>
+                        <button type="submit"
+                            class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Save</button>
+                    </div>
+
+                    <?php
+                    echo "<br/>";
+                    echo "Results: <br/>";
+                    echo "First Name: " . $this->getElementValueString("first-name") . "<br />";
+                    echo "Last Name: " . $this->getElementValueString("last-name") . "<br />";
+                    echo "E-Mail: " . $this->getElementValueString("email") . "<br />";
+                    echo "Country: " . $this->getElementValueString("country") . "<br />";
+                    ?>
+
+                </div>
+            </div>
+
+        <?php
+        });
+
+
+    }
+
+    public function renderContainer($options = null)
+    {
+        echo "<div id=\"" . $this->id . "\">";
+        $this->renderAJAX();
+        echo "</div>";
+    }
+}

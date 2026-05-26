@@ -1,12 +1,10 @@
 <?php
-// XYO.Web
-// Copyright (c) 2024 Grigore Stefan <g_stefan@yahoo.com>
-// MIT License (MIT) <http://opensource.org/licenses/MIT>
-// SPDX-FileCopyrightText: 2024 Grigore Stefan <g_stefan@yahoo.com>
-// SPDX-License-Identifier: MIT
+
+// XYO.Web Example
+// SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
+// SPDX-License-Identifier: Apache-2.0
 
 defined("XYO_WEB") or die("Forbidden");
-require_once ("./_site/web.php");
 
 class TableUser extends \XYO\Web\DataSource\Table
 {
@@ -14,13 +12,8 @@ class TableUser extends \XYO\Web\DataSource\Table
     public $counter_id;
     public $name;
 
-    public function __construct($connection = null)
+    public static function descriptor($info)
     {
-        parent::__construct($connection);
-    }
-
-    public static function descriptor(&$info)
-    {        
         $info->name = "user";
         $info->primaryKey = "id";
         $info->fields = array(
