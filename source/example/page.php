@@ -4,6 +4,8 @@
 // SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
 // SPDX-License-Identifier: Apache-2.0
 
+namespace Example;
+
 defined("XYO_WEB") or die("Forbidden");
 
 require_once(XYO_WEB_PATH."_library/xyo-web-example-css.php");
@@ -11,7 +13,7 @@ require_once(XYO_WEB_PATH."_library/xyo-web-example-css.php");
 use \XYO\LucideIcons\LucideIcons;
 use \XYO\Web\Library\XYOWebLogo;
 use \XYO\OverlayScrollbars\OverlayScrollbars;
-use \XYO\Library\XYOWebExampleCSS;
+use \_Library\XYOWebExampleCSS;
 
 use \DataSource\TableCounter;
 use \DataSource\TableUser;

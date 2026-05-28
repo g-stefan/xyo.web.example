@@ -4,9 +4,10 @@
 // SPDX-FileCopyrightText: 2024-2026 Grigore Stefan <g_stefan@yahoo.com>
 // SPDX-License-Identifier: Apache-2.0
 
+namespace Example;
+
 defined("XYO_WEB") or die("Forbidden");
 
-require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
 use \XYO\LucideIcons\LucideIcons;
 
 class ComponentAjaxNested extends \XYO\Web\Component
