@@ -6,19 +6,15 @@
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once(XYO_WEB_PATH . "_library/xyo-web-example-css.php");
-require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
-require_once(XYO_WEB_PATH . "_site/xyo/web/library/xyo-web-logo.php");
-require_once(XYO_WEB_PATH . "_site/xyo/overlay-scrollbars/overlayscrollbars.php");
-require_once(XYO_WEB_PATH . "_site/datasource/query-user.php");
-require_once(XYO_WEB_PATH . "example/component-server.php");
-require_once(XYO_WEB_PATH . "example/component-ajax.php");
-require_once(XYO_WEB_PATH . "example/component-ajax-db.php");
-require_once(XYO_WEB_PATH . "example/component-form.php");
+require_once(XYO_WEB_PATH."_library/xyo-web-example-css.php");
+
 use \XYO\LucideIcons\LucideIcons;
 use \XYO\Web\Library\XYOWebLogo;
 use \XYO\OverlayScrollbars\OverlayScrollbars;
 use \XYO\Library\XYOWebExampleCSS;
+
+use \DataSource\TableCounter;
+use \DataSource\TableUser;
 
 class Test extends \XYO\Web\Page
 {

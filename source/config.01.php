@@ -7,7 +7,6 @@
 defined("XYO_WEB") or die("Forbidden");
 
 require_once("./_site/xyo/web/web.php");
-require_once("./_site/xyo/web/datasource/type/sqlite-connection.php");
 
 return array(
 	"dataSource" => array(

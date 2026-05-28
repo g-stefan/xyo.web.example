@@ -6,7 +6,6 @@
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
 use \XYO\LucideIcons\LucideIcons;
 
 class ComponentForm extends \XYO\Web\ComponentForm

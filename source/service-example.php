@@ -14,7 +14,10 @@ if (!defined("XYO_WEB")) {
 // ---
 
 defined("XYO_WEB_SERVICE") or die("Forbidden");
-require_once(XYO_WEB_PATH . "_site/datasource/query-user.php");
+
+use \DataSource\QueryUser;
+use \DataSource\TableCounter;
+use \DataSource\TableUser;
 
 class ServiceExample extends \XYO\Web\Module
 {

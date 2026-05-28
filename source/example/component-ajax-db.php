@@ -6,9 +6,8 @@
 
 defined("XYO_WEB") or die("Forbidden");
 
-require_once(XYO_WEB_PATH . "_site/xyo/lucide-icons/lucide-icons.php");
-require_once(XYO_WEB_PATH . "_site/datasource/table-counter.php");
 use \XYO\LucideIcons\LucideIcons;
+use \DataSource\TableCounter;
 
 class ComponentAjaxDB extends \XYO\Web\Component
 {
