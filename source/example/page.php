@@ -65,7 +65,7 @@ class Test extends \XYO\Web\Page
     public function render($options = null)
     { ?>
         <div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-slate-300 py-6 sm:py-12">
-            <div class="relative y-900/5 sm:mx-auto sm:max-w-lg sm:px-10">
+            <div class="relative sm:mx-auto sm:max-w-lg sm:px-10">
 
                 <div
                     class="min-w-[480px] bg-white mb-3 p-3 shadow-xl ring-1 ring-slate-900/5 sm:mx-auto sm:max-w-lg sm:rounded-lg sm:px-10">

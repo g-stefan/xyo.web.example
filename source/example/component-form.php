@@ -15,6 +15,7 @@ class ComponentForm extends \XYO\Web\ComponentForm
 
     public function init($options = null)
     {
+        parent::init($options);
         LucideIcons::register($this, "icons");
     }
 
@@ -88,10 +89,10 @@ class ComponentForm extends \XYO\Web\ComponentForm
                     <?php
                     echo "<br/>";
                     echo "Results: <br/>";
-                    echo "First Name: " . $this->getElementValueString("first-name") . "<br />";
-                    echo "Last Name: " . $this->getElementValueString("last-name") . "<br />";
-                    echo "E-Mail: " . $this->getElementValueString("email") . "<br />";
-                    echo "Country: " . $this->getElementValueString("country") . "<br />";
+                    echo "First Name: " . htmlspecialchars($this->getElementValueString("first-name", ""), ENT_QUOTES) . "<br />";
+                    echo "Last Name: " . htmlspecialchars($this->getElementValueString("last-name", ""), ENT_QUOTES) . "<br />";
+                    echo "E-Mail: " . htmlspecialchars($this->getElementValueString("email", ""), ENT_QUOTES) . "<br />";
+                    echo "Country: " . htmlspecialchars($this->getElementValueString("country", ""), ENT_QUOTES) . "<br />";
                     ?>
 
                 </div>

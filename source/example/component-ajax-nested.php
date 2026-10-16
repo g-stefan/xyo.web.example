@@ -16,7 +16,8 @@ class ComponentAjaxNested extends \XYO\Web\Component
 
     public function init($options = null)
     {
-        if ($this->isAJAX() && $this->isPost()) {
+        // Only for an AJAX request to this component, not to its parent.
+        if ($this->isComponentAJAX() && $this->isPost()) {
             $this->session->set("nested-count", $this->session->get("nested-count", 0) + 1);
         }
         $this->count = $this->session->get("nested-count", 0);

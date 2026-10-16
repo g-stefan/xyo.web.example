@@ -20,25 +20,32 @@ class ComponentAjaxDB extends \XYO\Web\Component
     {
         $this->table = $this->getDataSource(TableCounter::class);
 
+        // Seed the counter rows 1..10. Fields that are set act as a filter for
+        // load(), so clear() before setting the id. insert() keeps the id,
+        // save() would update a row that does not exist.
         for ($i = 1; $i <= 10; $i++) {
+            $this->table->clear();
             $this->table->id = $i;
             if (!$this->table->load(0, 1)) {
                 $this->table->clear();
+                $this->table->id = $i;
                 $this->table->count = 0;
-                $this->table->save();
+                $this->table->insert();
             }
         }
 
-        if ($this->isAJAX() && $this->isPost()) {
-            $this->table->clear();
-            for ($this->table->load(0, 10); $this->table->loadIsValid(); $this->table->loadNext()) {
-                $this->table->count += 1;
-                $this->table->save();
+        // Only for an AJAX request to this component, not to another one.
+        if ($this->isComponentAJAX() && $this->isPost()) {
+            for ($i = 1; $i <= 10; $i++) {
+                $this->table->clear();
+                $this->table->id = $i;
+                $this->table->atomicIncrement("count");
             }
-            $this->table->clear();
-            $this->table->id = 1;
-            $this->table->load(0, 1);
         }
+
+        $this->table->clear();
+        $this->table->id = 1;
+        $this->table->load(0, 1);
 
         LucideIcons::register($this, "icons");
     }

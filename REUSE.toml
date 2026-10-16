@@ -1,0 +1,79 @@
+version = 1
+SPDX-PackageName = "XYO.Web Example"
+SPDX-PackageSupplier = "Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-PackageDownloadLocation = "https://github.com/g-stefan/xyo.web.example"
+
+[[annotations]]
+path = ".gitignore"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = ".claude/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "fabricare/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "fabricare.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "version.json"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Unlicense"
+
+[[annotations]]
+path = "README.md"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "docs/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "test/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = "source/**"
+precedence = "closest"
+SPDX-FileCopyrightText = "2024-2026 Grigore Stefan <g_stefan@yahoo.com>"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [
+	"source/_site/xyo/lucide-icons/lucide-icons.woff",
+	"source/_site/xyo/lucide-icons/lucide-icons.license.txt"
+]
+precedence = "override"
+SPDX-FileCopyrightText = [
+	"2022 Lucide Contributors",
+	"2013-2022 Cole Bemis"
+]
+SPDX-License-Identifier = "ISC"
+
+[[annotations]]
+path = [
+	"source/_site/xyo/overlay-scrollbars/overlayscrollbars.browser.es6.min.js",
+	"source/_site/xyo/overlay-scrollbars/overlayscrollbars.min.css"
+]
+precedence = "override"
+SPDX-FileCopyrightText = "Rene Haas | KingSora"
+SPDX-License-Identifier = "MIT"

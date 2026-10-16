@@ -17,7 +17,8 @@ class ComponentAjax extends \XYO\Web\Component
 
     public function init($options = null)
     {
-        if ($this->isAJAX() && $this->isPost()) {
+        // Only for an AJAX request to this component, not to the nested one.
+        if ($this->isComponentAJAX() && $this->isPost()) {
             $this->session->set("ajax-count", $this->session->get("ajax-count", 0) + 1);
         }
         $this->count = $this->session->get("ajax-count", 0);

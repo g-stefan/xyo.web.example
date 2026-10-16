@@ -21,7 +21,7 @@ XYO.Web.OverlayScrollbars.instance = null;
  * @param {object} options - Overlay scrollbars config options
  */
 XYO.Web.OverlayScrollbars.create = function(elements, options) {
-	retV = [];
+	var retV = [];
 	if (!options) {
 		options = {scrollbars : {clickScroll : true}};
 	};
