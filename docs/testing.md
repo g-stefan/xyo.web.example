@@ -13,16 +13,20 @@ fabricare test
 ```
 
 Requirements: PHP 8 with `pdo_sqlite`, the XYO.Web vendor archive
-(`fabricare vendor` once) and `7zr` or `7z` on `PATH`. Apache, Node.js and a
-built `output/` are not needed.
+(`vendor/xyo.web.v<version>.zip`, `fabricare vendor` once) and a tool
+that extracts it: `7z` / `7za` on `PATH`, the Windows `tar.exe`
+(`%SystemRoot%\System32\tar.exe`) or `unzip` (`7zr` alone cannot read a
+`.zip`). Apache, Node.js and a built `output/` are not needed.
 
 Sample output:
 
 ```text
-OK    0001.php-lint.php                RESULT: 28 passed, 0 failed
-OK    0002.page-render.php             RESULT: 27 passed, 0 failed
+OK    0001.php-lint.php                RESULT: 31 passed, 0 failed
+OK    0002.page-render.php             RESULT: 30 passed, 0 failed
 ...
-ALL TEST FILES PASSED (8 files in test)
+OK    0009.concurrency.php             RESULT: 9 passed, 0 failed
+
+ALL TEST FILES PASSED (9 files in test)
 ```
 
 A failed file prints its full output under the summary line. The exit code
@@ -52,10 +56,11 @@ log `temp/test/<number>/site/_log/`.
 | `0002.page-render.php` | `/example` renders all components, CSP header, CSRF token and cookies, stylesheet swap, tables created; `/` default page, 404, trailing slash 301, direct `page.php` forbidden |
 | `0003.ajax-components.php` | the AJAX and nested AJAX counters count only their own requests; CSRF rejects missing / wrong tokens |
 | `0004.ajax-db.php` | the DB component keeps exactly rows 1..10 (also when row 1 differs or a row is deleted), increments all of them, shows row 1 |
-| `0005.ajax-form.php` | the AJAX form shows the posted values, trimmed and HTML escaped |
+| `0005.ajax-form.php` | the AJAX form shows the posted values, trimmed and HTML escaped; *Cancel* resets the form |
 | `0006.server-component.php` | full page form POST counter, CSRF, separate sessions |
-| `0007.service.php` | the CLI service seeds user 1 / counter 1, increments, lists the join; it does not run over HTTP |
-| `0008.data-source.php` | the data source rules described in [data-source.md](data-source.md) |
+| `0007.service.php` | the CLI service seeds user 1 / counter 1, increments, lists the join; runs from any current folder; exits 1 on an error; does not run over HTTP |
+| `0008.data-source.php` | the data source rules described in [data-source.md](data-source.md), `insertOnce()` |
+| `0009.concurrency.php` | 8 service runs at once, then 6 browser tabs (6 servers, `_lib/worker-ajax-db.php`) polling the DB component at once, on an empty database: no request fails, no increment is lost, nothing in the router log |
 
 ## Helpers
 
@@ -74,7 +79,8 @@ log `temp/test/<number>/site/_log/`.
 | Function / class | |
 |---|---|
 | `site_build($name)` | build a fresh site, returns its path |
-| `site_server_start($site)` | start the built-in server (stopped at exit), returns the base URL |
+| `site_server_start($site)` | start a built-in server on the site (stopped at exit), returns its base URL; call it again for one more server on the same site (the built-in server answers one request at a time) |
+| `test_run_parallel($commands, $cwd, $logPath)` | start every command (an argument array) at once, wait, return `[exitCode, output]` for each |
 | `new Client($url)` | `get($path)`, `post($path, $fields)`, `status`, `body`, `header($name)`, `cookies`, `token()` (the CSRF token found in the last page) |
 | `test_counters($html)` | every `Counter: N` value of a response, in order |
 | `site_db($site)` | PDO on `_repository/example.sqlite` |

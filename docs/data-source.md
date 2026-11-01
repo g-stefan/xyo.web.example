@@ -195,6 +195,77 @@ Prefer `atomicIncrement()` / `atomicAdd()` to `load()` + change +
 `save()` for counters: concurrent requests (several browser tabs polling the
 DB AJAX component) would otherwise overwrite each other's changes.
 
+## Concurrent requests (SQLite)
+
+Under a real web server many requests run at the same time on the same
+SQLite file: several browser tabs polling a component, a cron service during
+a page view. Three rules keep them from failing with a 501.
+
+**Do not write while a `load()` cursor is open.** `load()` keeps its
+statement open for `loadNext()`, and `clear()` does not close it. An open
+statement holds an SQLite read lock. When two requests each hold one and both
+try to write, SQLite cannot let both go on and answers one of them at once
+with `SQLSTATE[HY000]: General error: 5 database is locked` (the busy
+timeout does not help: waiting could never succeed). The statement is closed
+by the next `load()` of the same object, by a `loadNext()` that reaches the
+end, or when the object is destroyed. So:
+
+```php
+// Does the row exist? count() closes its statement before returning.
+$table->clear();
+$table->id = 1;
+if ($table->count() == 0) {
+    ...
+}
+
+// Read a row, then write: read with a local object, it is destroyed
+// (and its cursor closed) at the end of the function.
+$row = $this->getDataSource(TableCounter::class);
+$row->clear();
+$row->id = 1;
+if ($row->load(0, 1)) {
+    $value = $row->count;
+}
+```
+
+A `for (load(); loadIsValid(); loadNext())` loop that runs to the end
+closes its statement too. Reading after the last write of a request (as the
+DB AJAX component does to show row 1) is fine.
+
+**Expect the insert of a fixed id to lose a race.** Two first requests can
+both see "no row 1" and both `insert()` it; the second fails on the primary
+key and `insert()` throws. The example tables use the trait
+`DataSource\InsertOnce` (`_site/data-source/insert-once.php`):
+
+```php
+class TableCounter extends \XYO\Web\DataSource\Table
+{
+    use InsertOnce;
+    ...
+}
+
+$table->clear();
+$table->id = 1;
+if ($table->count() == 0) {
+    $table->count = 0;
+    $table->insertOnce();   // true: inserted, false: another request did it
+}
+```
+
+`insertOnce()` returns `false` when the row exists after a failed
+`insert()`, and rethrows any other error. It assumes the key field is `id`.
+
+**`createStorage()` can race too.** Two first requests can both find the
+table missing; the second `CREATE TABLE` fails, `createStorage()` returns
+`false` and the connection log (`_log/<date>.sqlite-connection.log`) gets a
+`table ... already exists` line. The table exists, nothing else happens; on a
+production site create the storage once at install time instead of on every
+request.
+
+`test/0009.concurrency.php` runs the service and the DB AJAX component from
+several processes at once and checks that no request fails and no increment
+is lost.
+
 ## Queries (joins)
 
 `query-user.php` joins every user with its counter:

@@ -29,7 +29,32 @@ Next to the page, the project also has:
 - a **build** with [fabricare](https://github.com/g-stefan/fabricare) that
   merges the XYO.Web release with the sources and compiles Tailwind CSS;
 - **tests** that build the site, serve it with the PHP built-in web server
-  and check every component end to end.
+  and check every component end to end, also under concurrent requests.
+
+## Quick start
+
+```bash
+fabricare vendor                                        # once: XYO.Web + Tailwind
+fabricare make                                          # build the web root in output/
+php -S 127.0.0.1:8000 -t output test/_lib/router.php    # serve it
+```
+
+Open <http://127.0.0.1:8000/example>. Then:
+
+```bash
+php output/service-example.php    # the command line service
+php test/_run-all.php             # the tests
+```
+
+## How to use it
+
+- **To learn XYO.Web**: run it, then read [components.md](components.md)
+  next to `source/example/` — each card is one technique.
+- **To start a new site**: copy the repository, rename the namespace
+  `Example` and the route folder `example/`, keep the build and the tests,
+  and follow the recipes in [extending.md](extending.md).
+- **To check a framework upgrade**: change `"xyo.web"` in `fabricare.json`,
+  `fabricare vendor`, `php test/_run-all.php`.
 
 ## Contents
 
@@ -41,7 +66,7 @@ Next to the page, the project also has:
   page and each component, line by line, with the rules they follow.
 - [Data sources](data-source.md) — configuration, table and query
   descriptors, `load` / `insert` / `save` / `atomicIncrement` and their
-  pitfalls.
+  pitfalls, concurrent requests on SQLite.
 - [Command line service](service.md) — `service-example.php` and how to
   write your own service.
 - [Extending the example](extending.md) — recipes: a new page, a new
@@ -50,8 +75,8 @@ Next to the page, the project also has:
 
 ## Versions
 
-This documentation matches `xyo.web.example` 0.21.0 built on XYO.Web
-0.135.0 (see `version.json` and `fabricare.json`).
+This documentation matches `xyo.web.example` 0.23.0 built on XYO.Web
+0.144.0 (see `version.json` and `fabricare.json`).
 
 ## License
 

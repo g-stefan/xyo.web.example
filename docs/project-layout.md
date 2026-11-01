@@ -6,13 +6,13 @@ xyo.web.example/
 ├── version.json              version of this project
 ├── REUSE.toml   LICENSES/    license of every file (python -m reuse lint)
 ├── fabricare/                build scripts (override the fabricare defaults)
-│   ├── vendor.js             → vendor.xyo.web.js + vendor.tailwind.js
-│   ├── vendor.xyo.web.js     downloads vendor/xyo.web-<version>.7z
-│   ├── vendor.tailwind.js    npm install of Tailwind into archive/vendor.7z
+│   ├── vendor.js             → vendor.xyo.web.js + vendor.tailwindcss.js
+│   ├── vendor.xyo.web.js     downloads vendor/xyo.web.v<version>.zip
+│   ├── vendor.tailwindcss.js npm install of Tailwind into vendor/tailwindcss.zip
 │   ├── make.js               output/ = XYO.Web release + source/, then Tailwind
-│   ├── make.tailwind.js      compiles _library/xyo-web-example.css
-│   ├── release.js            packs output/ into release/
+│   ├── make.tailwindcss.js   compiles _library/xyo-web-example.css
 │   └── test.js               runs php test/_run-all.php
+│                             (clean and release are the fabricare defaults)
 ├── source/                   the site (copied over the XYO.Web release)
 │   ├── config.01.php         configuration: the SQLite connection
 │   ├── service-example.php   command line service
@@ -31,14 +31,15 @@ xyo.web.example/
 │       ├── data-source/      tables and queries
 │       │   ├── table-counter.php
 │       │   ├── table-user.php
-│       │   └── query-user.php
+│       │   ├── query-user.php
+│       │   └── insert-once.php   trait: insert() safe against a concurrent insert
 │       └── xyo/              third party libraries wrapped as components
 │           ├── lucide-icons/
 │           └── overlay-scrollbars/
 ├── test/                     tests (see testing.md)
 ├── docs/                     this documentation
 ├── .claude/skills/           Claude Code skill for this project
-├── vendor/   archive/        downloaded dependencies (not committed)
+├── vendor/                   downloaded dependencies (not committed)
 └── output/   temp/  release/ build results (not committed)
 ```
 

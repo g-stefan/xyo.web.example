@@ -19,9 +19,12 @@ class OverlayScrollbars extends \XYO\Web\Component
         $this->view->cssLinks->set(self::$name, $this->site . "_site/xyo/overlay-scrollbars/overlayscrollbars.mod.css");
         $this->view->jsLinks->set(self::$name, $this->site . "_site/xyo/overlay-scrollbars/overlayscrollbars.browser.es6.min.js", "defer");
         $this->view->jsLinks->set(self::$name, $this->site . "_site/xyo/overlay-scrollbars/overlayscrollbars.js", "defer");
-        $this->view->htmlClasses->set("data-overlayscrollbars-initialize");
-        $this->view->bodyClasses->set("data-overlayscrollbars-initialize");
+        // overlayscrollbars.js applies the scrollbars to this class on load.
         $this->view->bodyClasses->set("overlay-scrollbars");
+        // Hides the native scrollbars of <html> / <body> until the overlay
+        // scrollbars are initialized (no flicker while the deferred JS loads).
+        $this->view->htmlAttributes->set("data-overlayscrollbars-initialize", true);
+        $this->view->bodyAttributes->set("data-overlayscrollbars-initialize", true);
     }
 
 }

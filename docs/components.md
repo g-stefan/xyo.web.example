@@ -214,11 +214,9 @@ public function init($options = null)
     for ($i = 1; $i <= 10; $i++) {
         $this->table->clear();
         $this->table->id = $i;
-        if (!$this->table->load(0, 1)) {
-            $this->table->clear();
-            $this->table->id = $i;
+        if ($this->table->count() == 0) {
             $this->table->count = 0;
-            $this->table->insert();
+            $this->table->insertOnce();
         }
     }
 
@@ -230,20 +228,31 @@ public function init($options = null)
         }
     }
 
-    $this->table->clear();
-    $this->table->id = 1;
-    $this->table->load(0, 1);   // the card shows row 1
+    // The card shows row 1; $row is local, its read cursor closes with it.
+    $row = $this->getDataSource(TableCounter::class);
+    $row->clear();
+    $row->id = 1;
+    if ($row->load(0, 1)) {
+        $this->count = intval($row->count);
+    }
     ...
 }
 ```
 
 - `clear()` before setting the key: every field that is set is a filter of
-  `load()`.
-- `insert()` (not `save()`) to create a row with a chosen id: `save()` with
+  `load()` and `count()`.
+- `count()`, not `load()`, to test whether a row exists: `load()` keeps an
+  SQLite read cursor open, and a write made while it is open fails with
+  `database is locked` as soon as two browser tabs poll at the same time.
+- `insertOnce()` (the `DataSource\InsertOnce` trait) is `insert()` that
+  accepts losing the race when two first requests create the same row.
+  `insert()`, not `save()`, creates a row with a chosen id: `save()` with
   the primary key set is an `UPDATE`.
 - `atomicIncrement()` runs `UPDATE counter SET count = count + 1 WHERE id = ?`
   in a transaction: two browsers polling at the same time cannot lose an
   increment, which a `load()` + `count += 1` + `save()` could.
+- The displayed value is copied into `$this->count`, so the card shows 0
+  instead of failing if row 1 is deleted between the seed and the read.
 
 See [Data sources](data-source.md) for the rules behind these calls.
 
@@ -313,9 +322,12 @@ class XYOWebExampleCSS extends \XYO\Web\Component
 renders an icon: `render($icon)` prints `<i class="lucide-<icon>"></i>`.
 
 `_site/xyo/overlay-scrollbars/overlay-scrollbars.php` links the
-OverlayScrollbars CSS / JS (`defer`) and adds the `overlay-scrollbars` class
-to `<body>`; `overlayscrollbars.js` applies the custom scrollbars to every
-element with that class on page load.
+OverlayScrollbars CSS / JS (`defer`), adds the `overlay-scrollbars` class
+to `<body>` and the `data-overlayscrollbars-initialize` attribute to `<html>`
+and `<body>` (`View::htmlAttributes` / `bodyAttributes`, UniqueLists:
+`set("data-overlayscrollbars-initialize", true)` renders the bare attribute;
+it hides the native scrollbars until the script runs); `overlayscrollbars.js` applies the
+custom scrollbars to every element with that class on page load.
 
 ## Sessions
 

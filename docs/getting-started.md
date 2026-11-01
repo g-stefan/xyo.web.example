@@ -11,7 +11,8 @@ To **run** the site:
 To **build** it from the sources:
 
 - [fabricare](https://github.com/g-stefan/fabricare) on `PATH`;
-- `7zr` or `7z` (7-Zip) and `curl`;
+- `7z` (the full 7-Zip, not only `7zr`: the XYO.Web release is a `.zip`)
+  and `curl` on `PATH`;
 - Node.js with `npm` / `npx` (Tailwind CSS is compiled with
   `@tailwindcss/cli`).
 
@@ -22,11 +23,14 @@ fabricare vendor
 ```
 
 `vendor` downloads the XYO.Web release named in `fabricare.json`
-(`"xyo.web": "0.135.0"`) to `vendor/xyo.web-0.135.0.7z`, and installs
-Tailwind CSS into `archive/vendor.7z`. Both steps are skipped when the files
-already exist. Set `VENDOR_SOURCE_GIT` to download from another place than
-`https://github.com/g-stefan`, and `VENDOR_SOURCE_AUTH` to add extra `curl`
-arguments (for example an authorization header).
+(`"xyo.web": "0.144.0"`) to `vendor/xyo.web.v0.144.0.zip`, and installs
+Tailwind CSS with `npm` into `vendor/tailwindcss.zip`. Both steps are
+skipped when the files already exist; to change the XYO.Web version, edit
+`fabricare.json` and run `vendor` again. Set `VENDOR_SOURCE_GIT` to download
+from another place than `https://github.com/g-stefan` (for example your own
+Gitea), and `VENDOR_SOURCE_AUTH` to add extra `curl` arguments (for example
+an authorization header). When the release is not found the build stops with
+`not found - <url>`.
 
 ```bash
 fabricare make
@@ -50,8 +54,10 @@ fabricare make
 fabricare release
 ```
 
-`release` packs `output/` into `release/xyo.web.example-<version>.7z` and
-records its SHA-512 in `release/xyo.web.example-<version>.sha512.json`.
+`release` packs `output/` into `release/xyo.web.example.v<version>.zip`
+and records its SHA-512 in
+`release/xyo.web.example.v<version>.sha512.json`. The version comes from
+`version.json`.
 
 ## Run the site
 
@@ -102,15 +108,14 @@ missing, so the page is unstyled but fully working.
 
 ## Run the command line service
 
-From the web root (the service uses paths relative to the current folder):
-
 ```bash
-cd output
-php service-example.php
+php output/service-example.php
 ```
 
-It creates the tables if needed, makes sure user 1 and counter 1 exist,
-increments counter 1 and prints every user with its counter:
+The service changes to its own folder (the web root) first, so it works
+from any current folder. It creates the tables if needed, makes sure user 1
+and counter 1 exist, increments counter 1 and prints every user with its
+counter:
 
 ```text
 Id: 1
@@ -119,7 +124,9 @@ Name: Hello
 Count: 1
 ```
 
-See [Command line service](service.md).
+The exit code is 0 on success and 1 when the run failed (the error is in
+`output/_log/<date>.router.log`), so cron or the Windows Task Scheduler can
+report it. See [Command line service](service.md).
 
 ## Run the tests
 
@@ -127,9 +134,24 @@ See [Command line service](service.md).
 php test/_run-all.php
 ```
 
-or `fabricare test`. The tests need `vendor/xyo.web-<version>.7z` (run
-`fabricare vendor` once) and `7zr` / `7z` on `PATH`; they do not need Apache,
-Node.js or a built `output/`. See [Testing](testing.md).
+or `fabricare test`. The tests need `vendor/xyo.web.v<version>.zip` (run
+`fabricare vendor` once) and a tool that extracts it (`7z`, the Windows
+`tar.exe` or `unzip`); they do not need Apache, Node.js or a built `output/`.
+See [Testing](testing.md).
+
+## Troubleshooting
+
+| Symptom | Cause / what to do |
+|---|---|
+| `fabricare vendor`: `not found - <url>` | no XYO.Web release with that version at `VENDOR_SOURCE_GIT`; check `fabricare.json` |
+| `fabricare make`: `'7z' is not recognized` | install 7-Zip and put the folder of `7z.exe` on `PATH` (`7zr` cannot read `.zip`) |
+| page without styles | Tailwind was not compiled: run `fabricare make` (a site served from a test build has no stylesheet) |
+| 401 on a POST | missing or wrong `_token` field, or the session / `_token` cookie was not sent |
+| 404 | no `page.php` / `api.php` / `slug.php` for that path; the example page is `/example` (`/` shows the default XYO.Web page) |
+| 501 | an exception: see `_log/<date>.router.log` (and `<date>.sqlite-connection.log` for SQL errors) |
+| `database is locked` in the log | a write while a `load()` cursor was open, see [concurrent requests](data-source.md#concurrent-requests-sqlite) |
+| `_repository/example.sqlite` not created | the web server user cannot write to `_repository/` |
+| service exit code 1 | the run failed, the 501 page was printed; see `_log/<date>.router.log` |
 
 ## Clean
 

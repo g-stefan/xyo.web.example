@@ -6,10 +6,10 @@ has the same configuration, data sources and classes as the site.
 
 ## Run it
 
-From the web root (`output/` after a build):
+From any folder (`output/` is the web root after a build):
 
 ```bash
-php service-example.php
+php output/service-example.php
 ```
 
 Output on the first run:
@@ -24,6 +24,16 @@ Count: 1
 Each run increments counter 1, the same counter shown by the DB AJAX
 component (rows 1..10, see [components.md](components.md#db-ajax-component--component-ajax-dbphp)).
 
+| Exit code | Meaning |
+|---|---|
+| 0 | the service ran |
+| 1 | the router answered an error: an exception in the service gives the 501 page (printed) and is logged in `_log/<date>.router.log` |
+| 255 | PHP itself failed (for example a syntax error) |
+
+Runs may overlap (a slow run and the next cron tick, or a run during page
+views): they do not fail and no increment is lost, see
+[concurrent requests](data-source.md#concurrent-requests-sqlite).
+
 ## How service-example.php works
 
 The file is both the launcher and the service:
@@ -36,10 +46,12 @@ if (!defined("XYO_WEB")) {
         http_response_code(403);
         die("Forbidden");
     }
+    chdir(__DIR__);   // the web root
     require_once("./_site/xyo/web/web.php");
     defined("XYO_WEB") or die("Forbidden");
     \XYO\Web\Main\serviceRun(__FILE__);
-    exit(0);
+    $code = http_response_code();
+    exit((is_int($code) && ($code >= 400)) ? 1 : 0);
 }
 
 defined("XYO_WEB_SERVICE") or die("Forbidden");
@@ -64,8 +76,15 @@ return ServiceExample::class;
    and returns its name. The router creates it and calls `init()`,
    `process()` and `render()`, like for an API route.
 
-`require_once("./_site/xyo/web/web.php")` is relative to the current
-folder, hence "run it from the web root".
+`require_once("./_site/xyo/web/web.php")` and the SQLite path of
+`config.01.php` are relative to the current folder, so the launcher first
+changes to its own folder, the web root. Without the `chdir()` a run from
+another folder fails (`Failed opening required './_site/xyo/web/web.php'`).
+
+The router catches every exception, logs it and renders the 501 page, so the
+script would always end normally; the launcher turns the response code the
+router set (`http_response_code()`) into the exit code that cron and the Task
+Scheduler look at.
 
 ### Why the PHP_SAPI check
 
@@ -91,22 +110,24 @@ $tableUser->createStorage();
 // user 1 / counter 1 are created with these ids when missing
 $tableUser->clear();
 $tableUser->id = 1;
-if (!$tableUser->load(0, 1)) {
-    $tableUser->clear();
-    $tableUser->id = 1;
+if ($tableUser->count() == 0) {
     $tableUser->counter_id = 1;
     $tableUser->name = "Hello";
-    $tableUser->insert();
+    $tableUser->insertOnce();
 }
 
+// counter 1: created with 1, or incremented (also when another run
+// created it between count() and insertOnce())
 $tableCounter->clear();
 $tableCounter->id = 1;
-if (!$tableCounter->load(0, 1)) {
+$created = false;
+if ($tableCounter->count() == 0) {
+    $tableCounter->count = 1;
+    $created = $tableCounter->insertOnce();
+}
+if (!$created) {
     $tableCounter->clear();
     $tableCounter->id = 1;
-    $tableCounter->count = 1;
-    $tableCounter->insert();
-} else {
     $tableCounter->atomicIncrement("count");
 }
 
@@ -118,8 +139,11 @@ for ($queryUser->load(); $queryUser->loadIsValid(); $queryUser->loadNext()) {
 }
 ```
 
-A failed `load()` empties every field, so the key is set again before
-`insert()`. See [Data sources](data-source.md).
+`count()` tests whether a row exists without leaving a read cursor open (a
+`load()` would, and the writes after it could then fail with `database is
+locked` when two runs overlap); `insertOnce()` is `insert()` that accepts
+another run creating the same row first. See
+[Data sources](data-source.md#concurrent-requests-sqlite).
 
 ## Writing your own service
 

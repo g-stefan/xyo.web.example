@@ -31,9 +31,15 @@ check_contains("example stylesheet linked", "_library/xyo-web-example.css", $htm
 check_not_contains("default xyo-web.css removed", "library/xyo-web.css", $html);
 check_contains("lucide icons stylesheet linked", "lucide-icons.min.css", $html);
 check_contains("overlay scrollbars script linked", "overlayscrollbars.browser.es6.min.js", $html);
+check_contains("body has the overlay-scrollbars class", "<body class=\"overlay-scrollbars\"", $html);
+check("body has the overlay scrollbars initialize attribute", preg_match("/<body [^>]*\\bdata-overlayscrollbars-initialize>/", $html) === 1);
+check("html has the overlay scrollbars initialize attribute", preg_match("/<html [^>]*\\bdata-overlayscrollbars-initialize>/", $html) === 1);
+check_not_contains("no attribute name used as a class", "class=\"data-overlayscrollbars-initialize", $html);
+check_contains("icons rendered", "<i class=\"lucide-server\"></i>", $html);
 check_contains("xyo.web client script linked", "_site/xyo/web/web.js", $html);
-check_contains("AJAX component polls with a POST", "XYO.Web.Component.AJAX.post(\"ajax\"", $html);
-check_contains("nested component polls with its own id", "XYO.Web.Component.AJAX.post(\"ajax/ajax-nested\"", $html);
+// request ids are written with json_encode(), so "/" is escaped as "\/"
+check_contains("AJAX component polls with a POST", "XYO.Web.Component.AJAX.post(" . json_encode("ajax") . ", " . json_encode("ajax"), $html);
+check_contains("nested component polls with its own id", "XYO.Web.Component.AJAX.post(" . json_encode("ajax/ajax-nested") . ", " . json_encode("ajax.ajax-nested"), $html);
 
 t_section("database storage created");
 $db = site_db($site);

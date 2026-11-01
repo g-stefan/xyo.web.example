@@ -3,13 +3,13 @@
 // SPDX-FileCopyrightText: 2023-2024 Grigore Stefan <g_stefan@yahoo.com>
 // SPDX-License-Identifier: Unlicense
 
-messageAction("make [" + Project.name + ".tailwind]");
+messageAction("make [" + Project.name + ".tailwindcss]");
 
 // ---
 
 runInPath("temp", function() {
 	if (!Shell.directoryExists("node_modules")) {
-		exitIf(Shell.system("7zr x -aoa ../archive/vendor.7z"));
+		exitIf(Shell.system("7z x -aoa ../vendor/tailwindcss.zip"));
 	};
 });
 

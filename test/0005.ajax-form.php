@@ -17,6 +17,7 @@ $token = $client->token();
 t_section("form markup");
 check_contains("form id", "id=\"ajax-form_form\"", $html);
 check_contains("submit handler posts the form", "XYO.Web.Component.AJAX.postForm(\"ajax-form\", \"ajax-form_form\"", $html);
+check_contains("Cancel resets the form", "<button type=\"reset\"", $html);
 
 t_section("POST the form");
 $html = $client->post("example", [

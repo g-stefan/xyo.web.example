@@ -128,6 +128,23 @@ $counter->delete();
 $counter->clear();
 check_eq("delete() by the set fields", 4, intval($counter->count()));
 
+t_section("insertOnce");
+$counter->clear();
+$counter->id = 20;
+$counter->count = 0;
+check("insertOnce() creates a missing row", $counter->insertOnce() === true);
+$counter->clear();
+$counter->id = 20;
+$counter->count = 5;
+check("insertOnce() of an existing id returns false, no exception", $counter->insertOnce() === false);
+$counter->clear();
+$counter->id = 20;
+$counter->load(0, 1);
+check_eq("the existing row is unchanged", 0, intval($counter->count));
+$counter->clear();
+$counter->id = 20;
+$counter->delete();
+
 t_section("QueryUser LEFT OUTER JOIN");
 $user->clear();
 $user->id = 1;

@@ -20,7 +20,7 @@ class LucideIcons extends \XYO\Web\Component
 
     public function render($icon = null)
     {
-        echo "<i class=\"lucide-" . $icon . "\"></i>";
+        echo "<i class=\"lucide-" . htmlspecialchars((string) $icon, ENT_QUOTES) . "\"></i>";
     }
 
 }

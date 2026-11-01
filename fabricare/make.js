@@ -15,10 +15,10 @@ Shell.mkdirRecursivelyIfNotExists("temp");
 
 // ---
 
-exitIf(Shell.system("7zr x vendor/xyo.web-"+Solution.vendor["xyo.web"]+".7z -ooutput"));
+exitIf(Shell.system("7z x vendor/xyo.web.v"+Solution.vendor["xyo.web"]+".zip -ooutput"));
 exitIf(!Shell.copyDirRecursively("source", "output"));
 
 // ---
 
-Fabricare.include("make.tailwind");
+Fabricare.include("make.tailwindcss");
 

@@ -80,13 +80,28 @@ function test_7z_extract($archive, $target)
             return true;
         }
     }
+    // 7zr reads only .7z archives; the Windows tar (bsdtar) and unzip read .zip,
+    // GNU tar (Git Bash puts it first on PATH) does not
+    $commands = ["unzip -q -o " . escapeshellarg($archive) . " -d " . escapeshellarg($target)];
+    if (PHP_OS_FAMILY === "Windows") {
+        $tar = getenv("SystemRoot") . "\\System32\\tar.exe";
+        array_unshift($commands, escapeshellarg($tar) . " -xf " . escapeshellarg($archive) . " -C " . escapeshellarg($target));
+    }
+    foreach ($commands as $command) {
+        $output = [];
+        $code = 0;
+        exec($command . " 2>&1", $output, $code);
+        if ($code === 0) {
+            return true;
+        }
+    }
     return false;
 }
 
 // Build a fresh copy of the site, returns its path.
 function site_build($name)
 {
-    $vendor = TEST_PROJECT_PATH . "vendor/xyo.web-" . test_xyo_web_version() . ".7z";
+    $vendor = TEST_PROJECT_PATH . "vendor/xyo.web.v" . test_xyo_web_version() . ".zip";
     if (!file_exists($vendor)) {
         test_fatal("missing " . $vendor . " - run \"fabricare vendor\" first");
     }
@@ -97,7 +112,7 @@ function site_build($name)
     mkdir($site, 0777, true);
 
     if (!test_7z_extract($vendor, $site)) {
-        test_fatal("unable to extract " . $vendor . " (7zr / 7z not found on PATH?)");
+        test_fatal("unable to extract " . $vendor . " (7z / tar / unzip not found?)");
     }
     test_copy_dir(TEST_PROJECT_PATH . "source", $site);
 
@@ -115,9 +130,11 @@ function test_free_port()
     return intval(substr($name, strrpos($name, ":") + 1));
 }
 
-$GLOBALS["__site_server"] = null;
+$GLOBALS["__site_server"] = [];
 
-// Start the PHP built-in web server on the site, returns the base URL.
+// Start the PHP built-in web server on the site, returns the base URL. Each
+// call starts one more server on the same site: the built-in server answers
+// one request at a time, several servers give concurrent requests.
 function site_server_start($site)
 {
     $port = test_free_port();
@@ -138,8 +155,10 @@ function site_server_start($site)
     if (!is_resource($process)) {
         test_fatal("unable to start the PHP built-in web server");
     }
-    $GLOBALS["__site_server"] = [$process, $pipes];
-    register_shutdown_function("site_server_stop");
+    if (count($GLOBALS["__site_server"]) == 0) {
+        register_shutdown_function("site_server_stop");
+    }
+    $GLOBALS["__site_server"][] = [$process, $pipes];
 
     $deadline = microtime(true) + 10;
     while (microtime(true) < $deadline) {
@@ -155,16 +174,16 @@ function site_server_start($site)
 
 function site_server_stop()
 {
-    if (is_null($GLOBALS["__site_server"])) {
-        return;
+    $servers = $GLOBALS["__site_server"];
+    $GLOBALS["__site_server"] = [];
+    foreach ($servers as $server) {
+        list($process, $pipes) = $server;
+        foreach ($pipes as $pipe) {
+            fclose($pipe);
+        }
+        proc_terminate($process);
+        proc_close($process);
     }
-    list($process, $pipes) = $GLOBALS["__site_server"];
-    $GLOBALS["__site_server"] = null;
-    foreach ($pipes as $pipe) {
-        fclose($pipe);
-    }
-    proc_terminate($process);
-    proc_close($process);
 }
 
 // Minimal HTTP client that keeps cookies (the session and the _token cookie).
@@ -287,4 +306,34 @@ function site_service($site)
     exec(escapeshellarg(PHP_BINARY) . " service-example.php 2>&1", $output, $code);
     chdir($cwd);
     return [$code, implode("\n", $output)];
+}
+
+// Start all commands (argument arrays) at once in $cwd and wait for them,
+// returns [exitCode, output] for each. Outputs go through files in $logPath,
+// so a process that writes a lot cannot block on a full pipe.
+function test_run_parallel($commands, $cwd, $logPath)
+{
+    if (!is_dir($logPath)) {
+        mkdir($logPath, 0777, true);
+    }
+    $running = [];
+    foreach ($commands as $index => $command) {
+        $log = $logPath . "/process-" . $index . ".log";
+        $process = proc_open($command, [
+            0 => ["pipe", "r"],
+            1 => ["file", $log, "w"],
+            2 => ["file", $log, "a"]
+        ], $pipes, $cwd);
+        if (!is_resource($process)) {
+            test_fatal("unable to start " . implode(" ", $command));
+        }
+        fclose($pipes[0]);
+        $running[$index] = [$process, $log];
+    }
+    $results = [];
+    foreach ($running as $index => list($process, $log)) {
+        $code = proc_close($process);
+        $results[$index] = [$code, file_get_contents($log)];
+    }
+    return $results;
 }

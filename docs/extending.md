@@ -170,7 +170,11 @@ class TableNote extends \XYO\Web\DataSource\Table
 
 Call `$this->getDataSource(TableNote::class)->createStorage()` where the site
 starts (the example does it in `page.php`), then use it as described in
-[Data sources](data-source.md).
+[Data sources](data-source.md). If the site creates rows with fixed ids on
+first use, add `use InsertOnce;` to the class and follow the rules of
+[concurrent requests](data-source.md#concurrent-requests-sqlite): test with
+`count()`, create with `insertOnce()`, and never write while a `load()`
+cursor is open.
 
 ## A new library
 

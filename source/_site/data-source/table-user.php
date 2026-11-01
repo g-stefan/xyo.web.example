@@ -10,6 +10,8 @@ defined("XYO_WEB") or die("Forbidden");
 
 class TableUser extends \XYO\Web\DataSource\Table
 {
+    use InsertOnce;
+
     public $id;
     public $counter_id;
     public $name;

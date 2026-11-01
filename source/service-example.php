@@ -12,10 +12,17 @@ if (!defined("XYO_WEB")) {
         http_response_code(403);
         die("Forbidden");
     }
+    // web.php and the SQLite path in config.01.php are relative to the web
+    // root, the folder of this file: run from there, whatever the current
+    // folder is.
+    chdir(__DIR__);
     require_once("./_site/xyo/web/web.php");
     defined("XYO_WEB") or die("Forbidden");
     \XYO\Web\Main\serviceRun(__FILE__);
-    exit(0);
+    // An error (an exception gives the 501 page) sets the response code:
+    // report it to cron / the task scheduler with the exit code.
+    $code = http_response_code();
+    exit((is_int($code) && ($code >= 400)) ? 1 : 0);
 }
 // ---
 
@@ -39,26 +46,29 @@ class ServiceExample extends \XYO\Web\Module
 
         // ---
 
-        // A failed load() empties the fields, so set the id again and use
-        // insert() to create the row with this id (save() would update).
+        // Test if a row exists with count(), not load(): load() keeps its
+        // SQLite read cursor open, and a write while a cursor is open fails
+        // with "database is locked" when another process writes too.
+        // insert() (not save(), which would update) creates the row with this
+        // id; insertOnce() also handles another run creating it first.
         $tableUser->clear();
         $tableUser->id = 1;
-        if (!$tableUser->load(0, 1)) {
-            $tableUser->clear();
-            $tableUser->id = 1;
+        if ($tableUser->count() == 0) {
             $tableUser->counter_id = 1;
             $tableUser->name = "Hello";
-            $tableUser->insert();
+            $tableUser->insertOnce();
         }
 
         $tableCounter->clear();
         $tableCounter->id = 1;
-        if (!$tableCounter->load(0, 1)) {
+        $created = false;
+        if ($tableCounter->count() == 0) {
+            $tableCounter->count = 1;
+            $created = $tableCounter->insertOnce();
+        }
+        if (!$created) {
             $tableCounter->clear();
             $tableCounter->id = 1;
-            $tableCounter->count = 1;
-            $tableCounter->insert();
-        } else {
             $tableCounter->atomicIncrement("count");
         }
 
